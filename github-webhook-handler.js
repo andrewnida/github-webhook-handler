@@ -13,8 +13,8 @@ function create (options) {
   if (typeof options != 'object')
     throw new TypeError('must provide an options object')
 
-  if (typeof options.path != 'string')
-    throw new TypeError('must provide a \'path\' option')
+  if (!Array.isArray(options.paths) || options.paths.length === 0)
+    throw new TypeError('must provide a \'paths\' option')
 
   if (typeof options.secret != 'string')
     throw new TypeError('must provide a \'secret\' option')
@@ -27,7 +27,7 @@ function create (options) {
 
 
   function handler (req, res, callback) {
-    if (req.url.split('?').shift() !== options.path)
+    if (options.paths.indexOf(req.url.split('?').shift()) === -1)
       return callback()
 
     function hasError (msg) {
@@ -71,6 +71,8 @@ function create (options) {
 
       res.writeHead(200, { 'content-type': 'application/json' })
       res.end('{"ok":true}')
+
+      console.log( req.url );
 
       var emitData = {
           event   : event
